@@ -1,9 +1,12 @@
 <template>
-  <div></div>
+  <div id="app">
+    <h2>黑马头条</h2>
+    <router-view />
+  </div>
 </template>
 
 <script>
 export default {};
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="less" scoped></style>
