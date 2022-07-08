@@ -1,6 +1,10 @@
 <template>
   <div class="login-container">
-    <van-nav-bar title="登录" />
+    <van-nav-bar title="登录" left="guanbi">
+      <template #left>
+        <van-icon name="cross" color="#fff" @click="$router.back()" />
+      </template>
+    </van-nav-bar>
 
     <van-form @submit="onSubmit" ref="form">
       <van-field
@@ -109,8 +113,10 @@ export default {
       // 如果捕获await的错误， 用 tey catch
       try {
         const res = await login(this.user);
+        this.$store.commit("setUser", res.data.data);
         console.log(res);
         Toast.success("登录成功");
+        this.$router.push("/");
       } catch (e) {
         // e >> 错误对象信息
         // if (e && e.response && e.response.data && e.response.data.message){

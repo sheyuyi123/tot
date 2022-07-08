@@ -18,8 +18,30 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: "/login",
-    component: () => import("@/views/Login"),
+    component: () => import("@/views/Login/index.vue"),
     name: "login",
+  },
+  {
+    path: "/",
+    component: () => import("@/views/layout"),
+    children: [
+      {
+        path: "home",
+        component: () => import("@/views/home/index.vue"),
+      },
+      {
+        path: "qa",
+        component: () => import("@/views/qa/index.vue"),
+      },
+      {
+        path: "viden",
+        component: () => import("@/views/viden/index.vue"),
+      },
+      {
+        path: "my",
+        component: () => import("@/views/my/index.vue"),
+      },
+    ],
   },
 ];
 
