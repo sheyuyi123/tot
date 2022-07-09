@@ -15,8 +15,8 @@
         </div>
         <div class="label-container">
           <span>{{ article.aut_name }}</span>
-          <span>评论{{ article.comm_count }}</span>
-          <span>{{ article.pubdate }}</span>
+          <span>{{ article.comm_count }}评论</span>
+          <span>{{ article.pubdate | relativeTime }}</span>
         </div>
       </template>
     </van-cell>
@@ -55,5 +55,8 @@ export default {
     width: 200px;
     height: 200px;
   }
+}
+/deep/.label-container span {
+  margin-left: 10px;
 }
 </style>

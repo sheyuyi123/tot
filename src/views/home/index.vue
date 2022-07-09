@@ -20,24 +20,40 @@
       /></van-tab>
       <template #nav-right>
         <div class="placeholder"></div>
-        <div class="hamburger-btn">
+        <div class="hamburger-btn" @click="showPopup = true">
           <TouiaoIcon icon="gengduo"></TouiaoIcon>
         </div>
       </template>
     </van-tabs>
+
+    <van-popup
+      close-icon-position="top-left"
+      closeable
+      position="bottom"
+      v-model="showPopup"
+      style="height: 90%"
+    >
+      <ChannelEdit
+        @changeActive="changeActive"
+        :mended="mended"
+        :active="active"
+      ></ChannelEdit>
+    </van-popup>
   </div>
 </template>
 
 <script>
+import ChannelEdit from "./components/channel-edit";
 import ArticleList from "./components/article-list.vue";
 import { RecomMended } from "@/api/channel";
 import TouiaoIcon from "@/components/TouiaoIcon.vue";
 export default {
   name: "HomePage",
-  components: { TouiaoIcon, ArticleList },
+  components: { TouiaoIcon, ArticleList, ChannelEdit },
   props: {},
   data() {
     return {
+      showPopup: false,
       active: 0,
       mended: [],
       list: [],
@@ -54,6 +70,11 @@ export default {
       const res = await RecomMended();
       // console.log(res);
       this.mended = res.data.data.channels;
+    },
+    changeActive(index, status) {
+      this.active = index;
+      // 弹层关闭
+      this.showPopup = status;
     },
   },
 };

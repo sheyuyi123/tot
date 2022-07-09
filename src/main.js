@@ -20,6 +20,8 @@ import "amfe-flexible";
 // request.get("/v1_0/channels").then((res) => {
 //   console.log(res.data.data.channels);
 // });
+// 注册全局时间包
+import "@/utils/dayjs";
 
 Vue.config.productionTip = false;
 

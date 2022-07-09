@@ -18,5 +18,6 @@ module.exports = {
     "vue/comment-directive": "off",
     "vue/multi-word-component-names": 0,
     "vue/no-unused-components": 0,
+    "vue/no-mutating-props": 0,
   },
 };
