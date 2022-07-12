@@ -21,7 +21,8 @@ module.exports = {
         // arg里面的file属性，为文件的路径
         return arg.file.includes("vant") ? 37.5 : 75
       },
-      propList: ['*']
+      propList: ['*'],
+      exclude: 'github-markdown'
     }
   }
 }

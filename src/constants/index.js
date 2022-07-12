@@ -1,1 +1,2 @@
 export const USERSCHENNLE = "USERSCHENNLE";
+export const HISTORYKEY = "HISTORYKEY";

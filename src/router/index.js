@@ -48,6 +48,12 @@ const routes = [
     name: "search",
     component: () => import("@/views/search/index.vue"),
   },
+  {
+    path: "/article/:articleId",
+    name: "article",
+    component: () => import("@/views/article/index.vue"),
+    props: true,
+  },
 ];
 
 const router = new VueRouter({

@@ -16,7 +16,11 @@
     </van-nav-bar>
 
     <van-tabs animated swipeable v-model="active" class="channel-tabs">
-      <van-tab v-for="(item, index) in mended" :key="index" :title="item.name"
+      <van-tab
+        v-for="(item, index) in mended"
+        :key="index"
+        :title="item.name"
+        to="/article"
         ><ArticleList :channel="item"
       /></van-tab>
       <template #nav-right>

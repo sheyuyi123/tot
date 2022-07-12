@@ -9,3 +9,11 @@ export const getSearchSuggestion = (q) => {
     },
   });
 };
+
+export const getSearch = (params) => {
+  return request({
+    method: "GET",
+    url: "/v1_0/search",
+    params,
+  });
+};
