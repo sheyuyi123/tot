@@ -9,6 +9,7 @@
           round
           block
           class="search-btn"
+          to="/search"
           >搜索</van-button
         >
       </template>
@@ -47,6 +48,8 @@ import ChannelEdit from "./components/channel-edit";
 import ArticleList from "./components/article-list.vue";
 import { RecomMended } from "@/api/channel";
 import TouiaoIcon from "@/components/TouiaoIcon.vue";
+import { USERSCHENNLE } from "@/constants/index";
+import { getLocal } from "@/utils/storage";
 export default {
   name: "HomePage",
   components: { TouiaoIcon, ArticleList, ChannelEdit },
@@ -70,6 +73,20 @@ export default {
       const res = await RecomMended();
       // console.log(res);
       this.mended = res.data.data.channels;
+
+      try {
+        // 获取用户tokey
+        const token = this.$store.state.user?.token;
+        // 获取本地存储频道数据
+        let channles = getLocal(USERSCHENNLE);
+        if (token || !channles) {
+          const res = await RecomMended();
+          channles = res.data.data.channels;
+        }
+        this.mended = channles;
+      } catch (e) {
+        this.$toast("获取用户数据失败");
+      }
     },
     changeActive(index, status) {
       this.active = index;

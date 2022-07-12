@@ -10,7 +10,7 @@ dayjs.extend(relativeTime);
 // 注册中文语音包
 dayjs.locale("zh-cn");
 // 当前时间 t0 指定时间 时隔多久
-console.log(dayjs().to(dayjs("2021-01-01")));
+// console.log(dayjs().to(dayjs("2021-01-01")));
 
 import Vue from "vue";
 

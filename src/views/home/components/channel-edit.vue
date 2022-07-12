@@ -50,9 +50,16 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import { Notify } from "vant";
 import differenceBy from "lodash/differenceBy";
-import { fetchAllChannels } from "@/api/channel";
+import {
+  fetchAllChannels,
+  fetchAllChannel,
+  deleteUserChannel,
+} from "@/api/channel";
+import { setLocal } from "@/utils/storage";
+import { USERSCHENNLE } from "@/constants/index.js";
 export default {
   name: "ChannelEdit",
   components: {},
@@ -81,6 +88,7 @@ export default {
     //     return !this.mended.come((mendedItem) => mendedItem.id === item.id);
     //   });
     // },
+    ...mapState(["user"]),
   },
   watch: {},
   created() {
@@ -89,15 +97,37 @@ export default {
   mounted() {},
   methods: {
     async fetchAllChannels() {
+      // 如果用户登录 |本地没有数据 >> 接口
+      // 其他 >> 本地存储
       const res = await fetchAllChannels();
-      // console.log(res);
+      // // console.log(res);
       this.allchannels = res.data.data.channels;
     },
-    addChannel(channel) {
+    async addChannel(channel) {
       this.mended.push(channel);
+      // 持久化
+      // 本地存储 >> 未登录
+      // 线上服务器 >> 已登录
+      // 判断是否登录 >> token >> vuex里面取值
+      if (this.user) {
+        try {
+          // 已经登录成功进行成功的提示
+          await fetchAllChannel({
+            id: channel.id,
+            seq: this.mended.length,
+          });
+          this.$toast("添加频道成功");
+        } catch (e) {
+          this.$toast("添加频道失败");
+        }
+      } else {
+        // 未登录
+        // 修改之后的个人频道数据存储到本地存储
+        setLocal(USERSCHENNLE, this.mended);
+      }
     },
     onMyChannelClick(channel, index) {
-      console.log(channel, index);
+      // console.log(channel, index);
 
       if (this.isEdit) {
         if (index === 0) {
@@ -107,8 +137,22 @@ export default {
           this.$emit("changeActive", this.active - 1, true);
         }
         this.mended.splice(index, 1);
+
+        this.deleteUserChannel(channel);
       } else {
         this.$emit("changeActive", index, false);
+      }
+    },
+    async deleteUserChannel(channel) {
+      try {
+        if (this.user) {
+          await deleteUserChannel(channel.id);
+        } else {
+          setLocal(USERSCHENNLE, this.mended);
+        }
+        this.$toast("删除成功");
+      } catch (e) {
+        this.$toast("删除失败");
       }
     },
   },
