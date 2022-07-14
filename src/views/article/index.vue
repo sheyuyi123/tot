@@ -30,26 +30,12 @@
           <div slot="label" class="publish-date">
             {{ article.pubdate | relativeTime }}
           </div>
-          <van-button
-            v-if="article.is_followed"
-            class="follow-btn"
-            type="info"
-            color="#3296fa"
-            round
-            size="small"
-            icon="plus"
-            @click="follow"
-            >关注</van-button
-          >
-          <van-button
-            v-else
-            @click="follow"
-            class="follow-btn"
-            round
-            size="small"
-            >已关注</van-button
-          >
+          <FollowUser
+            :autId="article.art_id"
+            v-model="article.is_followed"
+          ></FollowUser>
         </van-cell>
+
         <!-- /用户信息 -->
 
         <!-- 文章内容 -->
@@ -59,6 +45,7 @@
           v-html="article.content"
         ></div>
         <van-divider>正文结束</van-divider>
+        <comment-list :source="article.art_id"></comment-list>
       </div>
       <!-- /加载完成-文章详情 -->
 
@@ -78,14 +65,28 @@
       <!-- /加载失败：其它未知错误（例如网络原因或服务端异常） -->
     </div>
 
+    <!-- 发布文章评论 -->
+    <van-popup v-model="isPostShow" position="bottom">
+      <comment-post :target="article.art_id" />
+    </van-popup>
+    <!-- /发布文章评论 -->
+
     <!-- 底部区域 -->
     <div class="article-bottom">
-      <van-button class="comment-btn" type="default" round size="small"
+      <van-button
+        @click="isPostShow = true"
+        class="comment-btn"
+        type="default"
+        round
+        size="small"
         >写评论</van-button
       >
       <van-icon name="comment-o" :badge="article.comm_count" color="#777" />
-      <van-icon color="#777" name="star-o" />
-      <van-icon color="#777" name="good-job-o" />
+      <CollectArticle
+        :artId="article.art_id"
+        v-model="article.is_collected"
+      ></CollectArticle>
+      <DingZang :aotId="article.art_id" v-model="article.attitude"></DingZang>
       <van-icon name="share" color="#777777"></van-icon>
     </div>
     <!-- /底部区域 -->
@@ -93,18 +94,28 @@
 </template>
 
 <script>
-import { addFollow, deleteFollow } from "@/api/user";
+import CollectArticle from "./componento/collect-article/index.vue";
+import FollowUser from "./componento/follow-user/index.vue";
+import DingZang from "./componento/dingzang/index.vue";
 import { getArticleById } from "@/api/article";
 // 引入美化markdown的样式文件
 import "github-markdown-css";
 import { ImagePreview } from "vant";
+import CommentList from "./componento/comment-list.vue";
+import CommentPost from "./componento/comment-post.vue";
 
 // yarn add github-markdown-css -S
 // 当前文件通过 import "github-markdown-css"; 引入 不需要加路径
 //  内容添加类名 markdown-body
 export default {
   name: "ArticleIndex",
-  components: {},
+  components: {
+    FollowUser,
+    CollectArticle,
+    DingZang,
+    CommentList,
+    CommentPost,
+  },
   props: {
     articleId: {
       type: [Number, String],
@@ -116,6 +127,7 @@ export default {
     return {
       article: [],
       loading: false,
+      isPostShow: false,
     };
   },
   computed: {},
@@ -125,30 +137,10 @@ export default {
   },
   mounted() {},
   methods: {
-    async follow() {
-      try {
-        if (this.article.is_followed) {
-          await deleteFollow(this.article.aut_id);
-        } else {
-          await addFollow(this.article.aut_id);
-        }
-        this.article.is_followed = !this.article.is_followed;
-
-        this.$notify({
-          type: "success",
-          message: this.article.is_followed ? "关注成功" : "取消关注",
-        });
-      } catch (e) {
-        this.$notify({
-          type: "denger",
-          message: "操作失败",
-        });
-      }
-    },
     previewImg() {
-      console.log(this.$refs.countent);
+      // console.log(this.$refs.countent);
       const imgs = this.$refs.countent.querySelectorAll("img");
-      console.log(imgs);
+      // console.log(imgs);
       const images = [];
       imgs.forEach((item, index) => {
         images.push(item.src);
@@ -160,13 +152,13 @@ export default {
         });
       });
 
-      console.log(images);
+      // console.log(images);
     },
     async getArticleById() {
       this.loading = true;
       try {
         const res = await getArticleById(this.articleId);
-        console.log(res);
+        // console.log(res);
         this.article = res.data.data;
         this.loading = false;
 
