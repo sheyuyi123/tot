@@ -2,7 +2,7 @@
   <div class="comment-post">
     <van-field
       class="post-field"
-      v-model="message"
+      v-model.trim="message"
       rows="2"
       autosize
       type="textarea"
@@ -10,7 +10,9 @@
       placeholder="请输入留言"
       show-word-limit
     />
-    <van-button class="post-btn" @click="onPost">发布</van-button>
+    <van-button class="post-btn" @click="onPost" :disabled="!message.length"
+      >发布</van-button
+    >
   </div>
 </template>
 
@@ -21,6 +23,16 @@ export default {
   props: {
     target: {
       required: true,
+    },
+    type: {
+      type: [String, Number],
+      default: "a",
+    },
+  },
+  inject: {
+    articleId: {
+      type: [Number, String, Object],
+      default: null,
     },
   },
   data() {
@@ -43,10 +55,13 @@ export default {
         const res = await addComment({
           target: this.target.toString(), // 评论目标id（评论文章即文章id，对评论进行回复则为评论id） 防止有大数字最好也执行一下toString方法！
           content: this.message, // 评论内容
-          art_id: null, // 文章id，对评论内容发表回复时，需要传递此参数，表明所属文章id。对文章进行评论，不要传此参数。
+          art_id: this.type === "c" ? this.articleId : null, // 文章id，对评论内容发表回复时，需要传递此参数，表明所属文章id。对文章进行评论，不要传此参数。
         });
         console.log(res);
         this.$toast.success("发布成功");
+        this.message = "";
+
+        this.$emit("postSuccess", res.data.data.new_obj);
       } catch (e) {
         this.$toast.success("发布失败");
       }

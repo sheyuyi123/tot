@@ -26,9 +26,12 @@
         <span class="comment-pubdate">{{
           comment.pubdate | relativeTime
         }}</span>
-        <van-button class="reply-btn" round>{{
-          comment.reply_count
-        }}</van-button>
+        <van-button
+          class="reply-btn"
+          @click="$emit('reply-click', comment)"
+          round
+          >回复{{ comment.reply_count }}</van-button
+        >
       </div>
     </div>
   </van-cell>

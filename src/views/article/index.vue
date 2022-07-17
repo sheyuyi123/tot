@@ -45,7 +45,11 @@
           v-html="article.content"
         ></div>
         <van-divider>正文结束</van-divider>
-        <comment-list :source="article.art_id"></comment-list>
+        <comment-list
+          @reply-click="onReplyClick"
+          :list="commitList"
+          :source="article.art_id"
+        ></comment-list>
       </div>
       <!-- /加载完成-文章详情 -->
 
@@ -67,9 +71,19 @@
 
     <!-- 发布文章评论 -->
     <van-popup v-model="isPostShow" position="bottom">
-      <comment-post :target="article.art_id" />
+      <comment-post @postSuccess="postSuccess" :target="article.art_id" />
     </van-popup>
     <!-- /发布文章评论 -->
+
+    <!------------------------ 评论回复 ------------------------------>
+    <van-popup v-model="isReplyShow" position="bottom" style="height: 100%">
+      <CommentReply
+        v-if="isReplyShow"
+        @close="isReplyShow = false"
+        :currentComment="currentComment"
+      ></CommentReply>
+    </van-popup>
+    <!------------------------ /评论回复 ------------------------------>
 
     <!-- 底部区域 -->
     <div class="article-bottom">
@@ -103,6 +117,7 @@ import "github-markdown-css";
 import { ImagePreview } from "vant";
 import CommentList from "./componento/comment-list.vue";
 import CommentPost from "./componento/comment-post.vue";
+import CommentReply from "./componento/comment-reply.vue";
 
 // yarn add github-markdown-css -S
 // 当前文件通过 import "github-markdown-css"; 引入 不需要加路径
@@ -115,6 +130,7 @@ export default {
     DingZang,
     CommentList,
     CommentPost,
+    CommentReply,
   },
   props: {
     articleId: {
@@ -125,9 +141,17 @@ export default {
   },
   data() {
     return {
+      commitList: [],
       article: [],
       loading: false,
       isPostShow: false,
+      isReplyShow: false,
+      currentComment: {},
+    };
+  },
+  provide: function () {
+    return {
+      articleId: this.articleId, // 或者写成 this.$route.params.articleId  也可以
     };
   },
   computed: {},
@@ -137,6 +161,16 @@ export default {
   },
   mounted() {},
   methods: {
+    onReplyClick(comment) {
+      // console.log(comment);
+      this.isReplyShow = true;
+      this.currentComment = comment;
+    },
+    postSuccess(data) {
+      console.log(data);
+      this.commitList.unshift(data);
+      this.isPostShow = false;
+    },
     previewImg() {
       // console.log(this.$refs.countent);
       const imgs = this.$refs.countent.querySelectorAll("img");

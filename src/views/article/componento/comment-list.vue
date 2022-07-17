@@ -10,6 +10,7 @@
       error-text="出错了，点击重试"
     >
       <CommentItem
+        @reply-click="$emit('reply-click', $event)"
         v-for="item in list"
         :key="item.com_id"
         :comment="item"
@@ -30,10 +31,16 @@ export default {
     source: {
       required: true,
     },
+    list: {
+      request: true,
+    },
+    type: {
+      type: String,
+      default: "a",
+    },
   },
   data() {
     return {
-      list: [], // 评论列表
       loading: false, // 上拉加载更多的 loading
       finished: false, // 是否加载结束
       limit: 10,
@@ -46,7 +53,7 @@ export default {
     async onLoad() {
       try {
         const res = await getComments({
-          type: "a",
+          type: this.type,
           source: this.source,
           offset: this.offset,
           limit: this.limit,
